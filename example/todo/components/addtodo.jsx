@@ -14,8 +14,7 @@ class AddToDo extends Component {
 
 		return(
 			<div>
-				<input type="text" 
-          			ref =""
+				<input type="text"
           			onKeyUp={ this.inputValue.bind(this) }
           		/>
 

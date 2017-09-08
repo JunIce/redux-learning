@@ -1,14 +1,23 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { toggleTodo,SHOW_ACTIVE,SHOW_ALL,SHOW_COMPLETE } from '../Actions'
+
 
 class todoList extends Component {
 	render(){
-		const { todoLists } = this.props
+		const { todoLists,toggleTodos } = this.props;
+		const textComp = { textDecoration : 'line-through'};
 		return(
 			<ul>
 			{
-				todoLists.map((item,key) => {
-					return <li key={key}>{ item.text }</li>
+				todoLists.map(item => {
+
+					return <li 
+					key={item.id} 
+					data-id = {item.id}
+					onClick={()=>{toggleTodos(item.id)}}
+					style={item.complete ? textComp :{}}
+					>{ item.text }</li>
 				})
 			}
 			</ul>
@@ -17,10 +26,28 @@ class todoList extends Component {
 	
 }
 
+const getVisibleTodos = (todos, filter) => {
+  switch (filter) {
+    case SHOW_ALL:
+      return todos
+    case SHOW_COMPLETE:
+      return todos.filter(t => t.complete)
+    case SHOW_ACTIVE:
+      return todos.filter(t => !t.complete)
+    default:
+      throw new Error('Unknown filter: ' + filter)
+  }
+}
+
 
 const mapStateToProps = (state) => {
 	return{
-		todoLists : state.AddToDo
+		todoLists : getVisibleTodos(state.AddToDo, state.filter)
 	}
 }
-export default connect(mapStateToProps)(todoList);
+const mapDispatchToProps = (dispatch) => {
+	return{
+		toggleTodos : (id) => dispatch(toggleTodo(id))
+	}
+}
+export default connect(mapStateToProps,mapDispatchToProps)(todoList);
